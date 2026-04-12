@@ -1,62 +1,153 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tithe Calculator</title>
     <style>
-        body { font-family: sans-serif; text-align: center; background-color: #f0f2f5; padding: 20px; }
-        .container { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 350px; margin: auto; }
-        input { width: 80%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; }
-        button { background-color: #007bff; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px; width: 88%; }
-        #output { margin-top: 20px; text-align: left; line-height: 1.6; border-top: 1px solid #eee; padding-top: 15px; display: none; }
-        .green { color: #28a745; font-weight: bold; font-size: 1.2em; }
+        /* This makes it look like a modern mobile app */
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            padding: 20px; 
+            background-color: #f0f2f5; 
+        }
+        .card { 
+            background: white; 
+            padding: 25px; 
+            border-radius: 15px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+            width: 100%; 
+            max-width: 400px; 
+        }
+        h2 { color: #1c1e21; text-align: center; margin-top: 0; }
+        label { display: block; margin-top: 20px; font-weight: 600; color: #4b4f56; }
+        
+        input[type="number"] { 
+            width: 100%; 
+            padding: 12px; 
+            margin-top: 8px; 
+            border: 1px solid #dddfe2; 
+            border-radius: 6px; 
+            box-sizing: border-box; 
+            font-size: 18px; 
+        }
+
+        /* Container to put text on left and checkbox on right */
+        .checkbox-row { 
+            margin-top: 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background: #f7f8fa;
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .checkbox-row input { 
+            width: 20px; 
+            height: 20px; 
+            cursor: pointer;
+        }
+
+        button { 
+            width: 100%; 
+            padding: 14px; 
+            background-color: #1877f2; 
+            color: white; 
+            border: none; 
+            border-radius: 6px; 
+            margin-top: 25px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            font-weight: bold;
+        }
+        button:hover { background-color: #166fe5; }
+
+        #results { 
+            margin-top: 20px; 
+            padding: 15px; 
+            background: #e7f3ff; 
+            border-radius: 8px; 
+            display: none; 
+        }
+        .result-line { 
+            display: flex; 
+            justify-content: space-between; 
+            margin-bottom: 8px; 
+            padding-bottom: 5px; 
+            border-bottom: 1px solid #d8e6f2;
+        }
+        .final-amount { 
+            font-weight: bold; 
+            color: #00a400; 
+            font-size: 1.2em; 
+            margin-top: 10px; 
+            text-align: center;
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
+<div class="card">
     <h2>Tithe Calculator</h2>
-    <input type="number" id="dollars" placeholder="Enter amount ($)">
-    <br>
-    <label><input type="checkbox" id="thirdCheck"> Include 3rd Tithe?</label>
-    <br><br>
-    <button onclick="calculate()">Calculate Now</button>
+    
+    <label for="amount">Total Amount Received</label>
+    <input type="number" id="amount" placeholder="0.00" step="0.01">
 
-    <div id="output">
-        <div id="t1"></div>
-        <div id="t2"></div>
-        <div id="t3"></div>
-        <div id="total" class="green"></div>
+    <label class="checkbox-row" for="thirdTithe">
+        <span>Include Third Tithe/Savings?</span>
+        <input type="checkbox" id="thirdTithe">
+    </label>
+
+    <button onclick="calculate()">Calculate</button>
+
+    <div id="results">
+        <div class="result-line"><span>First Tithe (10%):</span> <span id="r1"></span></div>
+        <div class="result-line"><span>Second Tithe (10%):</span> <span id="r2"></span></div>
+        <div id="thirdRow" class="result-line" style="display:none;"><span>Third Tithe (10%):</span> <span id="r3"></span></div>
+        <div class="final-amount">You Keep: <span id="rf"></span></div>
     </div>
 </div>
 
 <script>
 function calculate() {
-    let amt = parseFloat(document.getElementById('dollars').value);
-    if (isNaN(amt) || amt <= 0) {
-        alert("Please enter a valid amount");
+    // Get the input value
+    let val = document.getElementById('amount').value;
+    let amount = parseFloat(val);
+
+    if (isNaN(amount) || amount <= 0) {
+        alert("Please enter a valid amount.");
         return;
     }
 
-    let tithe1 = amt * 0.10;
-    let remain = amt - tithe1;
+    // Calculation Logic
+    let t1 = amount * 0.10;
+    let balance = amount - t1;
+
+    let t2 = balance * 0.10;
+    balance -= t2;
+
+    let showThird = document.getElementById('thirdTithe').checked;
+    let t3 = 0;
     
-    let tithe2 = remain * 0.10;
-    remain -= tithe2;
-
-    document.getElementById('t1').innerHTML = "<b>First Tithe:</b> $" + tithe1.toFixed(2);
-    document.getElementById('t2').innerHTML = "<b>Second Tithe:</b> $" + tithe2.toFixed(2);
-
-    if (document.getElementById('thirdCheck').checked) {
-        let tithe3 = remain * 0.10;
-        remain -= tithe3;
-        document.getElementById('t3').innerHTML = "<b>Third Tithe:</b> $" + tithe3.toFixed(2);
-        document.getElementById('t3').style.display = "block";
+    if (showThird) {
+        t3 = balance * 0.10;
+        balance -= t3;
+        document.getElementById('thirdRow').style.display = 'flex';
     } else {
-        document.getElementById('t3').style.display = "none";
+        document.getElementById('thirdRow').style.display = 'none';
     }
 
-    document.getElementById('total').innerHTML = "<br>Remaining: $" + remain.toFixed(2);
-    document.getElementById('output').style.display = "block";
+    // Updating the Screen
+    document.getElementById('r1').innerText = "$" + t1.toFixed(2);
+    document.getElementById('r2').innerText = "$" + t2.toFixed(2);
+    document.getElementById('r3').innerText = "$" + t3.toFixed(2);
+    document.getElementById('rf').innerText = "$" + balance.toFixed(2);
+    
+    // Show the results box
+    document.getElementById('results').style.display = 'block';
 }
 </script>
 
