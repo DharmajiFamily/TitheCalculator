@@ -1,0 +1,21 @@
+{
+  "name": "Tithe Calculator",
+  "short_name": "Tithe Calc",
+  "id": "Tithetestapp",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "1779836886275.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "1779836886275.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}
