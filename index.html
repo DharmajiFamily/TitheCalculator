@@ -5,6 +5,10 @@
     <title>Tithe Calculator</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <!-- PWA Requirements -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
+
     <!-- do not cache this page -->
     <meta http-equiv="cache-control" content="max-age=0"/>
     <meta http-equiv="cache-control" content="no-cache"/>
@@ -136,7 +140,6 @@
 <footer class="staticrypt-footer">
 </footer>
 
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.min.js" integrity="sha384-lp4k1VRKPU9eBnPePjnJ9M2RF3i7PC30gXs70+elCVfgwLwx1tv5+ctxdtwxqZa7" crossorigin="anonymous"></script>
 
 <script>
@@ -160,5 +163,15 @@
         document.close();
     });
 </script>
+
+<!-- Service Worker Registration -->
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js')
+      .then(() => console.log('App ready to install!'))
+      .catch((err) => console.log('Error', err));
+  }
+</script>
+
 </body>
 </html>
