@@ -1,0 +1,164 @@
+<!doctype html>
+<html class="staticrypt-html">
+<head>
+    <meta charset="utf-8">
+    <title>Tithe Calculator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- do not cache this page -->
+    <meta http-equiv="cache-control" content="max-age=0"/>
+    <meta http-equiv="cache-control" content="no-cache"/>
+    <meta http-equiv="expires" content="0"/>
+    <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT"/>
+    <meta http-equiv="pragma" content="no-cache"/>
+
+    <style>
+        .staticrypt-hr {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            border: 0;
+            border-top: 1px solid #eee;
+        }
+
+        .staticrypt-page {
+            width: 360px;
+            padding: 8% 0 0;
+            margin: auto;
+            box-sizing: border-box;
+        }
+
+        .staticrypt-form {
+            position: relative;
+            z-index: 1;
+            background: #FFFFFF;
+            max-width: 360px;
+            margin: 0 auto 100px;
+            padding: 45px;
+            text-align: center;
+            box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+            border-radius: 10px;
+        }
+
+        .staticrypt-form input {
+            outline: 0;
+            background: #f2f2f2;
+            width: 100%;
+            border: 0;
+            margin: 0 0 15px;
+            padding: 15px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .staticrypt-form .staticrypt-decrypt-button {
+            text-transform: uppercase;
+            outline: 0;
+            background: #4CAF50;
+            width: 100%;
+            border: 0;
+            padding: 15px;
+            color: #FFFFFF;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 25px;
+        }
+
+        .staticrypt-form .staticrypt-decrypt-button:hover, .staticrypt-form .staticrypt-decrypt-button:active, .staticrypt-form .staticrypt-decrypt-button:focus {
+            background: #43A047;
+        }
+
+        .staticrypt-html {
+            height: 100%;
+        }
+
+        .staticrypt-body {
+            margin-bottom: 1em;
+            background: #e4e4e4; /* fallback for old browsers */
+            font-family: "Arial", sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .staticrypt-instructions {
+            margin-top: -1em;
+            margin-bottom: 1em;
+        }
+
+        .staticrypt-title {
+            font-size: 1.5em;
+        }
+
+        .staticrypt-footer {
+            position: fixed;
+            height: 20px;
+            font-size: 16px;
+            padding: 2px;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin-bottom: 0;
+        }
+
+        .staticrypt-footer p {
+            margin: 2px;
+            text-align: center;
+            float: right;
+        }
+
+        .staticrypt-footer a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body class="staticrypt-body">
+<div class="staticrypt-page">
+    <div class="staticrypt-form">
+        <div class="staticrypt-instructions">
+            <p class="staticrypt-title">Tithe Calculator</p>
+            <p></p>
+        </div>
+
+        <hr class="staticrypt-hr">
+
+        <form id="staticrypt-form" action="#" method="post">
+            <input id="staticrypt-password"
+                   type="password"
+                   name="password"
+                   placeholder="password"
+                   autofocus/>
+
+            <input type="submit" class="staticrypt-decrypt-button" value="DECRYPT"/>
+        </form>
+    </div>
+
+</div>
+<footer class="staticrypt-footer">
+</footer>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.min.js" integrity="sha384-lp4k1VRKPU9eBnPePjnJ9M2RF3i7PC30gXs70+elCVfgwLwx1tv5+ctxdtwxqZa7" crossorigin="anonymous"></script>
+
+<script>
+    document.getElementById('staticrypt-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        var passphrase = document.getElementById('staticrypt-password').value,
+            encryptedMsg = '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',
+            encryptedHMAC = encryptedMsg.substring(0, 64),
+            encryptedHTML = encryptedMsg.substring(64),
+            decryptedHMAC = CryptoJS.HmacSHA256(encryptedHTML, CryptoJS.SHA256(passphrase)).toString();
+
+        if (decryptedHMAC !== encryptedHMAC) {
+            alert('wrong password!');
+            return;
+        }
+
+        var plainHTML = CryptoJS.AES.decrypt(encryptedHTML, passphrase).toString(CryptoJS.enc.Utf8);
+
+        document.write(plainHTML);
+        document.close();
+    });
+</script>
+</body>
+</html>
