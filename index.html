@@ -1,34 +1,149 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-        <!-- Google tag (gtag.js) -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tithe Calculator</title>
+
+    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-4TZCCEE190"></script>
     <script>
-     window.dataLayer = window.dataLayer || [];
+      window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
 
       gtag('config', 'G-4TZCCEE190');
     </script>
+    
+    <!-- Link to Manifest -->
     <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { font-family: sans-serif; text-align: center; background-color: #f0f2f5; padding: 20px; }
-        .container { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 350px; margin: auto; }
-        input { width: 80%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; }
-        button { background-color: #007bff; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px; width: 88%; }
-        #output { margin-top: 20px; text-align: left; line-height: 1.6; border-top: 1px solid #eee; padding-top: 15px; display: none; }
+        :root {
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-color: #000000;
+            --btn-bg: #007bff;
+            --btn-text: #ffffff;
+        }
+
+        body { 
+            font-family: sans-serif; 
+            text-align: center; 
+            background-color: var(--bg-color); 
+            color: var(--text-color);
+            padding: 20px; 
+            margin: 0;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Settings Icon in Top Right */
+        .settings-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .container { 
+            background: var(--card-bg); 
+            padding: 30px; 
+            border-radius: 20px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+            max-width: 350px; 
+            margin: 40px auto auto; 
+            color: var(--text-color);
+            transition: background 0.3s;
+        }
+
+        input[type="number"] { 
+            width: 80%; 
+            padding: 12px; 
+            margin: 10px 0; 
+            border: 1px solid #ccc; 
+            border-radius: 8px; 
+            font-size: 16px; 
+        }
+
+        button { 
+            background-color: var(--btn-bg); 
+            color: var(--btn-text); 
+            border: none; 
+            padding: 12px 24px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            width: 88%; 
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        #output { 
+            margin-top: 20px; 
+            text-align: left; 
+            line-height: 1.6; 
+            border-top: 1px solid #eee; 
+            padding-top: 15px; 
+            display: none; 
+        }
+
         .green { color: #28a745; font-weight: bold; font-size: 1.2em; }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 12px;
+            width: 80%;
+            max-width: 300px;
+            text-align: left;
+        }
+
+        .close {
+            float: right;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .color-picker-group {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .color-picker-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 8px 0;
+        }
     </style>
 </head>
 <body>
+
+<!-- Settings Icon -->
+<div class="settings-icon" onclick="openSettings()">⚙️</div>
 
 <div class="container">
     <h2>Tithe Calculator</h2>
     <input type="number" id="dollars" placeholder="Enter amount ($)">
     <br>
-    <label><input type="checkbox" id="thirdCheck"> Include 3rd Tithe/Savings?</label>
+    <label><input type="checkbox" id="thirdCheck"> Include 3rd Tithe?</label>
     <br><br>
     <button onclick="calculate()">Calculate Now</button>
 
@@ -37,6 +152,33 @@
         <div id="t2"></div>
         <div id="t3"></div>
         <div id="total" class="green"></div>
+    </div>
+</div>
+
+<!-- Settings Modal -->
+<div id="settingsModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeSettings()">&times;</span>
+        <h3>Theme Settings</h3>
+        
+        <label><input type="radio" name="theme" value="original" checked onclick="setTheme('original')"> Original</label><br>
+        <label><input type="radio" name="theme" value="dark" onclick="setTheme('dark')"> Dark Mode</label><br>
+        <label><input type="radio" name="theme" value="custom" onclick="setTheme('custom')"> Custom</label>
+
+        <div id="customColors" class="color-picker-group">
+            <div class="color-picker-item">
+                <label for="bgColor">Background:</label>
+                <input type="color" id="bgColor" value="#f0f2f5" onchange="applyCustomColors()">
+            </div>
+            <div class="color-picker-item">
+                <label for="btnColor">Button Color:</label>
+                <input type="color" id="btnColor" value="#007bff" onchange="applyCustomColors()">
+            </div>
+            <div class="color-picker-item">
+                <label for="textColor">Text Color:</label>
+                <input type="color" id="textColor" value="#000000" onchange="applyCustomColors()">
+            </div>
+        </div>
     </div>
 </div>
 
@@ -60,7 +202,7 @@ function calculate() {
     if (document.getElementById('thirdCheck').checked) {
         let tithe3 = remain * 0.10;
         remain -= tithe3;
-        document.getElementById('t3').innerHTML = "<b>Third Tithe/Savings:</b> $" + tithe3.toFixed(2);
+        document.getElementById('t3').innerHTML = "<b>Third Tithe:</b> $" + tithe3.toFixed(2);
         document.getElementById('t3').style.display = "block";
     } else {
         document.getElementById('t3').style.display = "none";
@@ -69,7 +211,61 @@ function calculate() {
     document.getElementById('total').innerHTML = "<br>Remaining: $" + remain.toFixed(2);
     document.getElementById('output').style.display = "block";
 }
+
+// Settings Modal Controls
+function openSettings() {
+    document.getElementById('settingsModal').style.display = 'block';
+}
+
+function closeSettings() {
+    document.getElementById('settingsModal').style.display = 'none';
+}
+
+// Theme Controls
+function setTheme(theme) {
+    const customGroup = document.getElementById('customColors');
+    
+    if (theme === 'original') {
+        customGroup.style.display = 'none';
+        document.documentElement.style.setProperty('--bg-color', '#f0f2f5');
+        document.documentElement.style.setProperty('--card-bg', '#ffffff');
+        document.documentElement.style.setProperty('--text-color', '#000000');
+        document.documentElement.style.setProperty('--btn-bg', '#007bff');
+        document.documentElement.style.setProperty('--btn-text', '#ffffff');
+    } else if (theme === 'dark') {
+        customGroup.style.display = 'none';
+        document.documentElement.style.setProperty('--bg-color', '#000000');
+        document.documentElement.style.setProperty('--card-bg', '#121212');
+        document.documentElement.style.setProperty('--text-color', '#ffffff');
+        document.documentElement.style.setProperty('--btn-bg', '#007bff');
+        document.documentElement.style.setProperty('--btn-text', '#ffffff');
+    } else if (theme === 'custom') {
+        customGroup.style.display = 'block';
+        applyCustomColors();
+    }
+}
+
+function applyCustomColors() {
+    const bg = document.getElementById('bgColor').value;
+    const btn = document.getElementById('btnColor').value;
+    const text = document.getElementById('textColor').value;
+
+    document.documentElement.style.setProperty('--bg-color', bg);
+    document.documentElement.style.setProperty('--card-bg', '#ffffff');
+    document.documentElement.style.setProperty('--text-color', text);
+    document.documentElement.style.setProperty('--btn-bg', btn);
+    document.documentElement.style.setProperty('--btn-text', '#ffffff');
+}
+
+// Close Modal when clicking outside content
+window.onclick = function(event) {
+    const modal = document.getElementById('settingsModal');
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
 </script>
+
 <script>
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js')
