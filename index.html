@@ -36,7 +36,6 @@
             transition: background-color 0.3s, color 0.3s;
         }
 
-        /* Settings Icon in Top Right */
         .settings-icon {
             position: absolute;
             top: 20px;
@@ -89,7 +88,6 @@
 
         .green { color: #28a745; font-weight: bold; font-size: 1.2em; }
 
-        /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
@@ -164,8 +162,12 @@
 
         <div id="customColors" class="color-picker-group">
             <div class="color-picker-item">
-                <label for="bgColor">Background:</label>
+                <label for="bgColor">Page Background:</label>
                 <input type="color" id="bgColor" value="#f0f2f5" onchange="applyCustomColors()">
+            </div>
+            <div class="color-picker-item">
+                <label for="cardBgColor">Card Background:</label>
+                <input type="color" id="cardBgColor" value="#ffffff" onchange="applyCustomColors()">
             </div>
             <div class="color-picker-item">
                 <label for="btnColor">Button Color:</label>
@@ -209,7 +211,6 @@ function calculate() {
     document.getElementById('output').style.display = "block";
 }
 
-// Settings Modal Controls
 function openSettings() {
     document.getElementById('settingsModal').style.display = 'block';
 }
@@ -218,24 +219,30 @@ function closeSettings() {
     document.getElementById('settingsModal').style.display = 'none';
 }
 
-// Theme Controls
 const systemMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+function updateMetaThemeColor(color) {
+    let metaTheme = document.querySelector('meta[name="theme-color"]');
+    if (metaTheme) {
+        metaTheme.setAttribute('content', color);
+    }
+}
 
 function applySystemTheme() {
     if (systemMediaQuery.matches) {
-        // Dark theme properties
         document.documentElement.style.setProperty('--bg-color', '#000000');
         document.documentElement.style.setProperty('--card-bg', '#121212');
         document.documentElement.style.setProperty('--text-color', '#ffffff');
         document.documentElement.style.setProperty('--btn-bg', '#007bff');
         document.documentElement.style.setProperty('--btn-text', '#ffffff');
+        updateMetaThemeColor('#000000');
     } else {
-        // Light theme properties
         document.documentElement.style.setProperty('--bg-color', '#f0f2f5');
         document.documentElement.style.setProperty('--card-bg', '#ffffff');
         document.documentElement.style.setProperty('--text-color', '#000000');
         document.documentElement.style.setProperty('--btn-bg', '#007bff');
         document.documentElement.style.setProperty('--btn-text', '#ffffff');
+        updateMetaThemeColor('#f0f2f5');
     }
 }
 
@@ -253,6 +260,7 @@ function setTheme(theme) {
         document.documentElement.style.setProperty('--text-color', '#000000');
         document.documentElement.style.setProperty('--btn-bg', '#007bff');
         document.documentElement.style.setProperty('--btn-text', '#ffffff');
+        updateMetaThemeColor('#f0f2f5');
     } else if (theme === 'dark') {
         customGroup.style.display = 'none';
         document.documentElement.style.setProperty('--bg-color', '#000000');
@@ -260,6 +268,7 @@ function setTheme(theme) {
         document.documentElement.style.setProperty('--text-color', '#ffffff');
         document.documentElement.style.setProperty('--btn-bg', '#007bff');
         document.documentElement.style.setProperty('--btn-text', '#ffffff');
+        updateMetaThemeColor('#000000');
     } else if (theme === 'custom') {
         customGroup.style.display = 'block';
         applyCustomColors();
@@ -268,17 +277,23 @@ function setTheme(theme) {
 
 function applyCustomColors() {
     const bg = document.getElementById('bgColor').value;
+    const cardBg = document.getElementById('cardBgColor').value;
     const btn = document.getElementById('btnColor').value;
     const text = document.getElementById('textColor').value;
 
+    localStorage.setItem('customBg', bg);
+    localStorage.setItem('customCardBg', cardBg);
+    localStorage.setItem('customBtn', btn);
+    localStorage.setItem('customText', text);
+
     document.documentElement.style.setProperty('--bg-color', bg);
-    document.documentElement.style.setProperty('--card-bg', '#ffffff');
+    document.documentElement.style.setProperty('--card-bg', cardBg);
     document.documentElement.style.setProperty('--text-color', text);
     document.documentElement.style.setProperty('--btn-bg', btn);
     document.documentElement.style.setProperty('--btn-text', '#ffffff');
+    updateMetaThemeColor(bg);
 }
 
-// React to live OS preference changes when 'system' is selected
 systemMediaQuery.addEventListener('change', () => {
     const currentTheme = localStorage.getItem('selectedTheme') || 'system';
     if (currentTheme === 'system') {
@@ -286,8 +301,20 @@ systemMediaQuery.addEventListener('change', () => {
     }
 });
 
-// Load saved theme on load
 window.addEventListener('DOMContentLoaded', () => {
+    if (localStorage.getItem('customBg')) {
+        document.getElementById('bgColor').value = localStorage.getItem('customBg');
+    }
+    if (localStorage.getItem('customCardBg')) {
+        document.getElementById('cardBgColor').value = localStorage.getItem('customCardBg');
+    }
+    if (localStorage.getItem('customBtn')) {
+        document.getElementById('btnColor').value = localStorage.getItem('customBtn');
+    }
+    if (localStorage.getItem('customText')) {
+        document.getElementById('textColor').value = localStorage.getItem('customText');
+    }
+
     const savedTheme = localStorage.getItem('selectedTheme') || 'system';
     const radioToSelect = document.querySelector(`input[name="theme"][value="${savedTheme}"]`);
     if (radioToSelect) {
@@ -296,7 +323,6 @@ window.addEventListener('DOMContentLoaded', () => {
     setTheme(savedTheme);
 });
 
-// Close Modal when clicking outside content
 window.onclick = function(event) {
     const modal = document.getElementById('settingsModal');
     if (event.target == modal) {
